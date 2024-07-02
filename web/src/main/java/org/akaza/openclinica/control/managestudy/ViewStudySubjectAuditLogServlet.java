@@ -38,10 +38,7 @@ import org.akaza.openclinica.dao.submit.ItemDataDAO;
 import org.akaza.openclinica.view.Page;
 import org.akaza.openclinica.web.InsufficientPermissionException;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author jsampson
@@ -168,6 +165,15 @@ public class ViewStudySubjectAuditLogServlet extends SecureController {
             studySubjectAudits.addAll(adao.findSubjectAuditEvents(subject.getId()));
 
             studySubjectAudits.addAll(adao.findStudySubjectGroupAssignmentAuditEvents(studySubject.getId()));
+
+            //Sort in descending order
+            Collections.sort(studySubjectAudits, new Comparator<AuditBean>() {
+                @Override
+                public int compare(AuditBean a1, AuditBean a2) {
+                    return a2.getAuditDate().compareTo(a1.getAuditDate());
+                }
+            });
+
             request.setAttribute("studySubjectAudits", studySubjectAudits);
 
             // Get the list of events
