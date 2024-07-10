@@ -1,12 +1,6 @@
 package org.akaza.openclinica.job;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
+import java.io.*;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -66,6 +60,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.quartz.QuartzJobBean;
+import org.xml.sax.InputSource;
+
 /**
  * Xalan Transform Job, an XSLT transform job using the Xalan classes
  *
@@ -268,7 +264,9 @@ public class XsltTransformJob extends QuartzJobBean {
                 String xsltPath = dataMap.getString(XSLT_PATH)+ File.separator +epBean.getFileName()[fileCntr];
                 in = new java.io.FileInputStream(xsltPath);
 
-                Transformer transformer = transformerFactory.newTransformer(new StreamSource(in));
+                Reader reader = new InputStreamReader(in,"UTF-8");
+
+                Transformer transformer = transformerFactory.newTransformer(new StreamSource(reader));
 
 
                 //endfile
