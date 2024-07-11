@@ -17,11 +17,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.sql.DataSource;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.*;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
@@ -267,6 +263,7 @@ public class XsltTransformJob extends QuartzJobBean {
                 Reader reader = new InputStreamReader(in,"UTF-8");
 
                 Transformer transformer = transformerFactory.newTransformer(new StreamSource(reader));
+                transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
 
 
                 //endfile
