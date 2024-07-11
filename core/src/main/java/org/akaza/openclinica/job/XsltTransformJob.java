@@ -277,7 +277,7 @@ public class XsltTransformJob extends QuartzJobBean {
 
 
                 endFileStream = new FileOutputStream(endFile);
-                transformer.transform(new StreamSource(xmlFilePath), new StreamResult(endFileStream));
+                transformer.transform(new StreamSource(reader), new StreamResult(endFileStream));
 
                 // JN...CLOSE THE STREAM...HMMMM
                 in.close();
