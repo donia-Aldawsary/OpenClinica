@@ -1,6 +1,7 @@
 package org.akaza.openclinica.job;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -258,9 +259,11 @@ public class XsltTransformJob extends QuartzJobBean {
                 JobTerminationMonitor.check();
 
                 String xsltPath = dataMap.getString(XSLT_PATH)+ File.separator +epBean.getFileName()[fileCntr];
-                in = new java.io.FileInputStream(xsltPath);
-                Reader reader = new InputStreamReader(in, "UTF-8");
-                Transformer transformer = transformerFactory.newTransformer(new StreamSource(reader));
+//                in = new java.io.FileInputStream(xsltPath);
+//                Reader reader = new InputStreamReader(in, "UTF-8");
+                InputSource inputSource = new InputSource(xsltPath);
+                inputSource.setEncoding(StandardCharsets.UTF_8.displayName());
+                Transformer transformer = transformerFactory.newTransformer(new StreamSource(inputSource.getByteStream()));
 
 
                 //endfile
@@ -274,8 +277,10 @@ public class XsltTransformJob extends QuartzJobBean {
 
 
                 endFileStream = new FileOutputStream(endFile);
-                transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-                transformer.transform(new StreamSource(xmlFilePath), new StreamResult(endFileStream));
+//                transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+                InputSource xmlInputSource = new InputSource(xmlFilePath);
+                xmlInputSource.setEncoding(StandardCharsets.UTF_8.displayName());
+                transformer.transform(new StreamSource(xmlInputSource.getByteStream()), new StreamResult(endFileStream));
 
                 // JN...CLOSE THE STREAM...HMMMM
                 in.close();
