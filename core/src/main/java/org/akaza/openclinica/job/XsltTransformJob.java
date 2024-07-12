@@ -278,15 +278,6 @@ public class XsltTransformJob extends QuartzJobBean {
 
                 endFileStream = new FileOutputStream(endFile);
                 transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-//                InputSource xmlInputSource = new InputSource(xmlFilePath);
-//                xmlInputSource.setEncoding(StandardCharsets.UTF_8.displayName());
-
-//                File xmlFile = new File();
-//                if(!xmlFile.exists()) {
-//                    xmlFile.createNewFile();
-//                }
-//                InputStream xmlInputStream = Files.newInputStream(xmlFile.toPath());
-
                 FileInputStream xmlFileInputStream = new FileInputStream(generalFileDir + ODMXMLFileName);
                 Reader xmlReader = new InputStreamReader(xmlFileInputStream, "UTF-8");
                 transformer.transform(new StreamSource(xmlReader), new StreamResult(endFileStream));
