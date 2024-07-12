@@ -274,6 +274,7 @@ public class XsltTransformJob extends QuartzJobBean {
 
 
                 endFileStream = new FileOutputStream(endFile);
+                transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
                 transformer.transform(new StreamSource(xmlFilePath), new StreamResult(endFileStream));
 
                 // JN...CLOSE THE STREAM...HMMMM
