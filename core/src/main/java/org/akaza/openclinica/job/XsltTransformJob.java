@@ -255,29 +255,26 @@ public class XsltTransformJob extends QuartzJobBean {
             File oldFilesPath = new File(generalFileDir);
             while(fileCntr<numXLS)
             {
-            	JobTerminationMonitor.check();
+                JobTerminationMonitor.check();
 
                 String xsltPath = dataMap.getString(XSLT_PATH)+ File.separator +epBean.getFileName()[fileCntr];
                 in = new java.io.FileInputStream(xsltPath);
 
-                Reader reader = new InputStreamReader(in,"UTF-8");
-
-                Transformer transformer = transformerFactory.newTransformer(new StreamSource(reader));
-                transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+                Transformer transformer = transformerFactory.newTransformer(new StreamSource(in));
 
 
                 //endfile
                 if(outputPath.endsWith(File.separator)) {
-                	 endFile = outputPath +  epBean.getExportFileName()[fileCntr];
+                    endFile = outputPath +  epBean.getExportFileName()[fileCntr];
                 }else {
-                	 endFile = outputPath + File.separator + epBean.getExportFileName()[fileCntr];
+                    endFile = outputPath + File.separator + epBean.getExportFileName()[fileCntr];
                 }
 
-                FileInputStream xmlFileInputStream = new FileInputStream(xmlFilePath);
-                Reader xmlReader = new InputStreamReader(xmlFileInputStream, "UTF-8");
+
+
 
                 endFileStream = new FileOutputStream(endFile);
-                transformer.transform(new StreamSource(xmlReader), new StreamResult(endFileStream));
+                transformer.transform(new StreamSource(xmlFilePath), new StreamResult(endFileStream));
 
                 // JN...CLOSE THE STREAM...HMMMM
                 in.close();
