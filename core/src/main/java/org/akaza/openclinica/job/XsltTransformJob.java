@@ -2,6 +2,8 @@ package org.akaza.openclinica.job;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -278,7 +280,11 @@ public class XsltTransformJob extends QuartzJobBean {
                 transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
 //                InputSource xmlInputSource = new InputSource(xmlFilePath);
 //                xmlInputSource.setEncoding(StandardCharsets.UTF_8.displayName());
-                InputStream xmlInputStream = new FileInputStream(xmlFilePath);
+                File xmlFile = new File(generalFileDir + ODMXMLFileName);
+                if(!xmlFile.exists()) {
+                    xmlFile.createNewFile();
+                }
+                InputStream xmlInputStream = Files.newInputStream(xmlFile.toPath());
                 transformer.transform(new StreamSource(xmlInputStream), new StreamResult(endFileStream));
 
                 // JN...CLOSE THE STREAM...HMMMM
