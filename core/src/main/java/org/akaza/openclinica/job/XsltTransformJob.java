@@ -1,12 +1,9 @@
 package org.akaza.openclinica.job;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,11 +20,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.sql.DataSource;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.*;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
@@ -66,6 +59,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.quartz.QuartzJobBean;
+import org.xml.sax.InputSource;
+
 /**
  * Xalan Transform Job, an XSLT transform job using the Xalan classes
  *
@@ -263,26 +258,29 @@ public class XsltTransformJob extends QuartzJobBean {
             File oldFilesPath = new File(generalFileDir);
             while(fileCntr<numXLS)
             {
-            	JobTerminationMonitor.check();
+                JobTerminationMonitor.check();
 
                 String xsltPath = dataMap.getString(XSLT_PATH)+ File.separator +epBean.getFileName()[fileCntr];
                 in = new java.io.FileInputStream(xsltPath);
-
-                Transformer transformer = transformerFactory.newTransformer(new StreamSource(in));
+                Reader reader = new InputStreamReader(in, "UTF-8");
+                Transformer transformer = transformerFactory.newTransformer(new StreamSource(reader));
 
 
                 //endfile
                 if(outputPath.endsWith(File.separator)) {
-                	 endFile = outputPath +  epBean.getExportFileName()[fileCntr];
+                    endFile = outputPath +  epBean.getExportFileName()[fileCntr];
                 }else {
-                	 endFile = outputPath + File.separator + epBean.getExportFileName()[fileCntr];
+                    endFile = outputPath + File.separator + epBean.getExportFileName()[fileCntr];
                 }
 
 
 
 
                 endFileStream = new FileOutputStream(endFile);
-                transformer.transform(new StreamSource(xmlFilePath), new StreamResult(endFileStream));
+                transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+                FileInputStream xmlFileInputStream = new FileInputStream(generalFileDir + ODMXMLFileName);
+                Reader xmlReader = new InputStreamReader(xmlFileInputStream, "UTF-8");
+                transformer.transform(new StreamSource(xmlReader), new StreamResult(endFileStream));
 
                 // JN...CLOSE THE STREAM...HMMMM
                 in.close();
