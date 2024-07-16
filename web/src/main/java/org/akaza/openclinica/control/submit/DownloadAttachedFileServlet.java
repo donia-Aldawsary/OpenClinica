@@ -37,20 +37,6 @@ public class DownloadAttachedFileServlet extends SecureController {
     public void mayProceed() throws InsufficientPermissionException {
         Locale locale = LocaleResolver.getLocale(request);
         FormProcessor fp = new FormProcessor(request);
-/*        int eventCRFId = fp.getInt("eventCRFId");
-        EventCRFDAO edao = new EventCRFDAO(sm.getDataSource());
-
-        if (eventCRFId > 0) {
-            if (!entityIncluded(eventCRFId, ub.getName(), edao, sm.getDataSource())) {
-                request.setAttribute("downloadStatus", "false");
-                addPageMessage(respage.getString("you_not_have_permission_download_attached_file"));
-                throw new InsufficientPermissionException(Page.DOWNLOAD_ATTACHED_FILE, resexception.getString("no_permission"), "1");
-            }
-        } else {
-            request.setAttribute("downloadStatus", "false");
-            addPageMessage(respage.getString("you_not_have_permission_download_attached_file"));
-            throw new InsufficientPermissionException(Page.DOWNLOAD_ATTACHED_FILE, resexception.getString("no_permission"), "1");
-        }*/
 
         if (ub.isSysAdmin()) {
             return;
@@ -69,24 +55,31 @@ public class DownloadAttachedFileServlet extends SecureController {
         FormProcessor fp = new FormProcessor(request);
         String filePathName = "";
         String fileName = fp.getString("fileName");
+        logger.debug("fileName .... " + fileName);
         File f = new File(fileName);
-              
+
         if (fileName != null && fileName.length() > 0) {
-            int parentStudyId = currentStudy.getParentStudyId();           
+            int parentStudyId = currentStudy.getParentStudyId();
             String testPath = Utils.getAttachedFileRootPath();
+            logger.debug("testPath .... " + testPath);
             String tail = File.separator + f.getName();
+            logger.debug("tail .... " + tail);
             String testName = testPath + currentStudy.getOid() + tail;
-            
-            String filePath = testPath + currentStudy.getOid() +File.separator;            
-            File temp = new File(filePath,f.getName());            
+            logger.debug("testName .... " + testName);
+
+            String filePath = testPath + currentStudy.getOid() +File.separator;
+            logger.debug("filePath .... " + filePath);
+            File temp = new File(filePath,f.getName());
             String canonicalPath= temp.getCanonicalPath();
-            
-            if (canonicalPath.startsWith(filePath)) {
-            	;
+            logger.debug("canonicalPath .... " + canonicalPath);
+            logger.debug("canonicalPath.startsWith(filePath) .... " + canonicalPath);
+
+            if (startsWithIgnoringSlashes(canonicalPath,filePath)) {
+                ;
             }else {
-            	throw new RuntimeException("Traversal attempt - file path not allowed " + fileName);
+                throw new RuntimeException("Traversal attempt - file path not allowed " + fileName);
             }
-            
+
             if (temp.exists()) {
                 filePathName = testName;
                 logger.info(currentStudy.getName() + " existing filePathName=" + filePathName);
@@ -116,25 +109,26 @@ public class DownloadAttachedFileServlet extends SecureController {
         logger.info("filePathName=" + filePathName + " fileName=" + fileName);
         File file = null;
         if(filePathName != null && filePathName.trim().length() >0) {
-        	file = new File(filePathName);
+            file = new File(filePathName);
         }else {
-        	file = new File(fileName);
+            file = new File(fileName);
         }
-        
-        if (file != null && file.exists()) {           
+
+        if (file != null && file.exists()) {
             /*
              *  try to use the passed in the existing file
-             *  OC-17868 remove any possible path traversal, will make sure only download files from defined download folder            
-             */                 	                    
-            String canonicalPath= file.getCanonicalPath();            
+             *  OC-17868 remove any possible path traversal, will make sure only download files from defined download folder
+             */
+            String canonicalPath= file.getCanonicalPath();
             String definedDownloadPath = Utils.getAttachedFileRootPath();
-            
-            if(!(canonicalPath.startsWith(definedDownloadPath))) {
-            	throw new RuntimeException("Traversal attempt - file path not allowed " + fileName);
+
+
+            if (!startsWithIgnoringSlashes(canonicalPath,definedDownloadPath)) {
+                throw new RuntimeException("Traversal attempt - file path not allowed " + fileName);
             }
-        	
+
         }
-        
+
         if (!file.exists() || file.length() <= 0) {
             addPageMessage("File " + filePathName + " " + respage.getString("not_exist"));
         } else {
@@ -170,6 +164,18 @@ public class DownloadAttachedFileServlet extends SecureController {
                 }
             }
         }
+    }
+
+    private boolean startsWithIgnoringSlashes(String str1, String str2) {
+        // Replace all forward slashes & back slashes with empty strings
+        String normalizedStr1 = str1.replace("/", "").replace("\\", "");
+        String normalizedStr2 = str2.replace("/", "").replace("\\", "");
+
+        logger.debug("normalizedStr1 .... {}", normalizedStr1);
+        logger.debug("normalizedStr2 .... {}", normalizedStr2);
+
+        // Compare the normalized strings
+        return normalizedStr1.startsWith(normalizedStr2);
     }
 
 }
