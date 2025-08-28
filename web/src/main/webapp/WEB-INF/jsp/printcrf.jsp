@@ -146,6 +146,7 @@ var app_end_date_timeLabel = '<oc:jsEscape key="end_date_time" bundle="${resword
 
 
 var app_formSigned= '<oc:jsEscape key="signed" bundle="${resterm}"/>';
+var app_formLocked = '<oc:jsEscape key="locked" bundle="${resterm}"/>';
 var app_electronicSignatureLabel='<oc:jsEscape key="electronic_signature" bundle="${resword}"/>';
 var app_statusLabel='<oc:jsEscape key="status" bundle="${resword}"/>';
 var app_the_eCRF_that_are_part_of_this_event_were_signed_by ='<oc:jsEscape key="the_eCRF_that_are_part_of_this_event_were_signed_by" bundle="${resword}"/>';

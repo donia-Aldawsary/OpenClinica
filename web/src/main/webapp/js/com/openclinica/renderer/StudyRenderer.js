@@ -429,11 +429,12 @@ function StudyRenderer(json) {
 		var electronicSignature = undefined;
 
 		if (app_displayAudits == 'y') {
-			if (studyEventData["@OpenClinica:Status"] == app_formSigned) {
+			if (studyEventData["@OpenClinica:Status"] == app_formSigned || studyEventData["@OpenClinica:Status"] == app_formLocked) {
 				var audits = studyEventData["OpenClinica:AuditLogs"]["OpenClinica:AuditLog"];
 				for ( var i = 0; i < audits.length; i++) {
 					var newVal = audits[i]["@NewValue"];
-					if (newVal == app_formSigned) {
+					var oldVal = audits[i]["@OldValue"];
+					if (newVal == app_formSigned || (newVal == app_formLocked && oldVal == app_formSigned)) {
 						electronicSignature = audits[i]["@Name"] + " ("
 								+ audits[i]["@UserName"] + ")" + " " + app_on + " "
 								+ audits[i]["@DateTimeStamp"];
