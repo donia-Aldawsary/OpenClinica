@@ -429,12 +429,11 @@ function StudyRenderer(json) {
 		var electronicSignature = undefined;
 
 		if (app_displayAudits == 'y') {
-			if (studyEventData["@OpenClinica:Status"] == app_formSigned || studyEventData["@OpenClinica:Status"] == app_formLocked) {
+			if ([app_formSigned, app_formLocked].includes(studyEventData["@OpenClinica:Status"])) {
 				var audits = studyEventData["OpenClinica:AuditLogs"]["OpenClinica:AuditLog"];
 				for ( var i = 0; i < audits.length; i++) {
-					var newVal = audits[i]["@NewValue"];
-					var oldVal = audits[i]["@OldValue"];
-					if (newVal == app_formSigned || (newVal == app_formLocked && oldVal == app_formSigned)) {
+
+					if (this.isSignatureRelevantTransition(audits[i])) {
 						electronicSignature = audits[i]["@Name"] + " ("
 								+ audits[i]["@UserName"] + ")" + " " + app_on + " "
 								+ audits[i]["@DateTimeStamp"];
@@ -459,6 +458,14 @@ function StudyRenderer(json) {
 		return s;
 
 	}
+
+	this.isSignatureRelevantTransition = function(auditEntry) {
+        if (auditEntry["@NewValue"] == app_formSigned
+                || (auditEntry["@NewValue"] == app_formLocked && auditEntry["@OldValue"] == app_formSigned)) {
+            return true;
+        }
+        return false;
+    }
 	
 
 	this.renderPrintableFormDefByRenderMode = function(formDef, eventDef,renderMode) {
