@@ -4,4 +4,5 @@
     <include file="migration/3.17/2023-07-06-OC-21268.xml"/>
     <include file="migration/3.17/2023-07-10-OC-21311.xml"/>
     <include file="migration/3.17/2023-07-24-OC-21344.xml"/>
+    <include file="migration/3.17/2025-09-03-OC-25225.xml"/>
 </databaseChangeLog>
