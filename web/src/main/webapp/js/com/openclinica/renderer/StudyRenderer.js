@@ -431,12 +431,20 @@ function StudyRenderer(json) {
 		if (app_displayAudits == 'y') {
 			if ([app_formSigned, app_formLocked].includes(studyEventData["@OpenClinica:Status"])) {
 				var audits = studyEventData["OpenClinica:AuditLogs"]["OpenClinica:AuditLog"];
-				for ( var i = 0; i < audits.length; i++) {
+				for ( var i = (audits.length-1); i >= 0; i--) {
 
 					if (this.isSignatureRelevantTransition(audits[i])) {
-						electronicSignature = audits[i]["@Name"] + " ("
-								+ audits[i]["@UserName"] + ")" + " " + app_on + " "
-								+ audits[i]["@DateTimeStamp"];
+
+					    if(audits[i]["@NewValue"] == app_formLocked){
+					        var signed_index = i-1;
+                            electronicSignature = audits[signed_index]["@Name"] + " ("
+                                    + audits[signed_index]["@UserName"] + ")" + " " + app_on + " "
+                                    + audits[signed_index]["@DateTimeStamp"];
+                        }else{
+                            electronicSignature = audits[i]["@Name"] + " ("
+                                + audits[i]["@UserName"] + ")" + " " + app_on + " "
+                                + audits[i]["@DateTimeStamp"];
+                        }
 
 						break;
 					}
