@@ -298,5 +298,8 @@
             </plugin>
         </plugins>
     </build>
+<properties>
+  <sonar.organization>donia-aldawsary</sonar.organization>
+</properties>
 
 </project>
